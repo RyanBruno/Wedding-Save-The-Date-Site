@@ -1,0 +1,225 @@
+<!doctype html>
+<!--
+  The dashboard shell. Served by the API process from bytes compiled into the
+  binary, never written into target/site, never uploaded to the bucket.
+
+  `data-signed-in` is filled in by the handler. The markup for both the sign-in
+  card and the board ships either way; only which of the two is shown differs,
+  so the browser is never handed two different documents for the same URL.
+
+  Absolute asset paths on purpose: this page answers at both /api/admin and
+  /api/admin/, and a relative href would resolve differently on each.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Guest list · Admin</title>
+  <link rel="stylesheet" href="/api/admin/admin.css">
+</head>
+
+<body data-signed-in="{{SIGNED_IN}}">
+
+  <!-- ── Sign in ─────────────────────────────────────────────────────────── -->
+
+  <main class="signin" id="signin" hidden>
+    <form class="signin__card" id="signin-form" autocomplete="off">
+      <h1 class="signin__title">Guest list</h1>
+      <p class="signin__sub">Cameron &amp; Ryan · administration</p>
+
+      <label class="field">
+        <span class="field__label">Password</span>
+        <input class="field__input" type="password" id="password" name="password"
+               autocomplete="current-password" required autofocus>
+      </label>
+
+      <p class="signin__error" id="signin-error" role="alert" hidden></p>
+
+      <button class="btn btn--primary btn--block" type="submit" id="signin-submit">Sign in</button>
+    </form>
+  </main>
+
+  <!-- ── Dashboard ───────────────────────────────────────────────────────── -->
+
+  <div class="shell" id="app" hidden>
+
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__mark">C&amp;R</span>
+        <span class="sidebar__name">Guest list</span>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav__item" data-view="overview" type="button">Overview</button>
+        <button class="nav__item" data-view="invitations" type="button">Invitations</button>
+        <button class="nav__item" data-view="guests" type="button">Guests</button>
+      </nav>
+
+      <div class="sidebar__foot">
+        <a class="sidebar__link" href="/api/admin/export.csv" download>Export CSV</a>
+        <button class="sidebar__link" id="signout" type="button">Sign out</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h1 class="topbar__title" id="view-title">Overview</h1>
+          <p class="topbar__sub" id="view-sub"></p>
+        </div>
+        <div class="topbar__actions">
+          <button class="btn" id="refresh" type="button">Refresh</button>
+          <button class="btn btn--primary" id="new-invitation" type="button">New invitation</button>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+
+        <!-- Overview -->
+        <section class="view" data-view="overview" hidden>
+          <div class="stats" id="stats"></div>
+
+          <div class="panel">
+            <div class="panel__head">
+              <h2 class="panel__title">Reply progress</h2>
+            </div>
+            <div class="panel__body">
+              <div class="progress" id="progress"></div>
+              <ul class="legend" id="progress-legend"></ul>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel__head">
+                <h2 class="panel__title">Latest replies</h2>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <table class="table table--compact">
+                  <thead>
+                    <tr><th>Invitation</th><th>Reply</th><th class="num">When</th></tr>
+                  </thead>
+                  <tbody id="latest"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel__head">
+                <h2 class="panel__title">Notes from guests</h2>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <ul class="notes" id="notes"></ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Invitations -->
+        <section class="view" data-view="invitations" hidden>
+          <div class="toolbar">
+            <input class="input input--search" type="search" id="party-search"
+                   placeholder="Search invitations or guests" autocomplete="off">
+            <div class="segmented" id="party-filter">
+              <button class="segmented__item is-active" data-filter="all" type="button">All</button>
+              <button class="segmented__item" data-filter="complete" type="button">Replied</button>
+              <button class="segmented__item" data-filter="partial" type="button">Partial</button>
+              <button class="segmented__item" data-filter="none" type="button">Awaiting</button>
+            </div>
+            <span class="toolbar__count" id="party-count"></span>
+          </div>
+
+          <div class="panel panel--flush">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Invitation</th>
+                  <th class="num">Guests</th>
+                  <th>Replies</th>
+                  <th>Note</th>
+                  <th class="num">Updated</th>
+                  <th class="actions"></th>
+                </tr>
+              </thead>
+              <tbody id="party-rows"></tbody>
+            </table>
+            <p class="empty" id="party-empty" hidden>No invitations match.</p>
+          </div>
+        </section>
+
+        <!-- Guests -->
+        <section class="view" data-view="guests" hidden>
+          <div class="toolbar">
+            <input class="input input--search" type="search" id="guest-search"
+                   placeholder="Search guests" autocomplete="off">
+            <div class="segmented" id="guest-filter">
+              <button class="segmented__item is-active" data-filter="all" type="button">All</button>
+              <button class="segmented__item" data-filter="yes" type="button">Attending</button>
+              <button class="segmented__item" data-filter="no" type="button">Declined</button>
+              <button class="segmented__item" data-filter="awaiting" type="button">Awaiting</button>
+            </div>
+            <span class="toolbar__count" id="guest-count"></span>
+          </div>
+
+          <div class="panel panel--flush">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Guest</th>
+                  <th>Invitation</th>
+                  <th>Reply</th>
+                  <th class="num">Replied</th>
+                  <th class="actions">Set reply</th>
+                </tr>
+              </thead>
+              <tbody id="guest-rows"></tbody>
+            </table>
+            <p class="empty" id="guest-empty" hidden>No guests match.</p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Overlays ────────────────────────────────────────────────────────── -->
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <aside class="drawer" id="drawer" hidden aria-label="Invitation detail">
+    <header class="drawer__head">
+      <div>
+        <h2 class="drawer__title" id="drawer-title">Invitation</h2>
+        <p class="drawer__sub" id="drawer-sub"></p>
+      </div>
+      <button class="icon-btn" id="drawer-close" type="button" aria-label="Close">&times;</button>
+    </header>
+    <div class="drawer__body" id="drawer-body"></div>
+  </aside>
+
+  <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <form class="modal__card" id="modal-form">
+      <h2 class="modal__title" id="modal-title">New invitation</h2>
+      <p class="modal__sub">
+        One guest per line. Everyone listed here forms one invitation and is
+        asked about together, exactly as the seeding script groups a CSV row.
+        End a line with <code>+1</code> to invite that person with a guest they
+        name themselves when they reply.
+      </p>
+      <textarea class="textarea" id="modal-names" rows="6"
+                placeholder="Dana Whitfield&#10;Sam Whitfield +1"></textarea>
+      <p class="modal__error" id="modal-error" role="alert" hidden></p>
+      <div class="modal__actions">
+        <button class="btn" type="button" id="modal-cancel">Cancel</button>
+        <button class="btn btn--primary" type="submit" id="modal-submit">Create invitation</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="/api/admin/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+# Maintainer: Ryan Bruno <ryanbruno506@gmail.com>
+#
+# Packages both halves of the deployment described in the README:
+#
+#   /usr/share/webapps/wedding-website   the prerendered site, served by nginx
+#   /usr/bin/wedding-website-api         the Axum service behind /api/rsvp
+#
+# The site is built same-origin: RSVP_API_BASE is left empty so the form posts
+# to /api/rsvp on whatever host serves the page, and nginx proxies that prefix
+# through to the API. Nothing has to be rebuilt when the domain changes.
+#
+# cargo-leptos and wasm-bindgen-cli 0.2.100 are not in the Arch repositories, so
+# they cannot be listed as makedepends. Install them once before building:
+#
+#   cargo install --locked cargo-leptos
+#   cargo install --locked wasm-bindgen-cli --version 0.2.100
+#
+# Then, from this directory:
+#
+#   makepkg -si
+
+pkgname=wedding-website
+pkgver=0.1.0.r60.gefa2b0b
+pkgrel=2
+pkgdesc="Cameron & Ryan save-the-date site with retained deployment API"
+arch=('x86_64')
+url="https://github.com/RyanBruno/Wedding-Website"
+license=('custom')
+depends=('glibc' 'gcc-libs')
+makedepends=('git' 'git-lfs' 'rustup' 'binaryen' 'dart-sass')
+optdepends=('nginx: serves the static site and terminates TLS'
+            'sqlite: read the RSVP replies out of the database')
+backup=('etc/nginx/conf.d/wedding-website.conf'
+        'etc/wedding-website/wedding-website.env')
+install="${pkgname}.install"
+options=('!lto')
+
+# Built straight from this working copy's git history, so a deploy always
+# corresponds to a commit. Uncommitted changes are not packaged.
+source=("${pkgname}::git+file://${startdir}/..")
+sha256sums=('SKIP')
+
+# The photographs are Git LFS objects, and the mirror makepkg clones from holds
+# only their pointer blobs, so they come from GitHub instead. The repository is
+# private: building needs an SSH key that can read it.
+#
+# git-lfs resolves this remote itself and ignores git's url.insteadOf rewrites,
+# so a build that already has the objects on disk cannot redirect it with a
+# config rule. WEDDING_LFS_REMOTE is that escape hatch: ../build.sh points it at
+# the repository copy inside the container, which needs no key and no network.
+_lfs_remote="${WEDDING_LFS_REMOTE:-git@github.com:RyanBruno/Wedding-Website.git}"
+
+pkgver() {
+    cd "${srcdir}/${pkgname}"
+    printf '0.1.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+    local missing=()
+    command -v cargo-leptos  >/dev/null || missing+=('cargo-leptos')
+    command -v wasm-bindgen  >/dev/null || missing+=('wasm-bindgen-cli 0.2.100')
+    if (( ${#missing[@]} )); then
+        error "not on PATH: ${missing[*]}"
+        error "install with: cargo install --locked cargo-leptos"
+        error "              cargo install --locked wasm-bindgen-cli --version 0.2.100"
+        return 1
+    fi
+
+    cd "${srcdir}/${pkgname}"
+
+    # Fetch the photographs from GitHub; see _lfs_remote above for why they do
+    # not come across with the clone.
+    git lfs install --local
+    git remote add lfs-origin "${_lfs_remote}" 2>/dev/null || \
+        git remote set-url lfs-origin "${_lfs_remote}"
+    git lfs pull lfs-origin
+
+    if grep -rl 'git-lfs.github.com/spec' src/frontend/public >/dev/null 2>&1; then
+        error "Git LFS pointers are still in place; the images did not download."
+        error "Check that this machine has an SSH key able to read ${_lfs_remote}"
+        return 1
+    fi
+
+    cargo fetch --locked
+}
+
+build() {
+    cd "${srcdir}/${pkgname}"
+
+    # rust-toolchain.toml already pins nightly with the wasm32 target; this only
+    # stops a rustup override elsewhere on the machine from winning.
+    export RUSTUP_TOOLCHAIN=nightly
+
+    # Empty means same-origin. nginx proxies /api/ to the service on localhost,
+    # so the WASM never needs an absolute API origin baked into it.
+    export RSVP_API_BASE=""
+
+    # Compiles the WASM and CSS, then runs the server binary once with
+    # --generate-only to prerender every route into target/site.
+    ./scripts/build-site.sh --release
+}
+
+package() {
+    cd "${srcdir}/${pkgname}"
+
+    install -Dm755 target/release/server \
+        "${pkgdir}/usr/bin/wedding-website-api"
+
+    install -dm755 "${pkgdir}/usr/share/webapps/${pkgname}"
+    cp -r target/site/. "${pkgdir}/usr/share/webapps/${pkgname}/"
+
+    # wasm-bindgen's TypeScript declarations. Nothing requests them and nothing
+    # could use them, and shipping them puts two more files on the CDN under
+    # the year-long immutable rule that covers everything else in pkg/.
+    find "${pkgdir}/usr/share/webapps/${pkgname}" -name '*.ts' -delete
+
+    find "${pkgdir}/usr/share/webapps/${pkgname}" -type d -exec chmod 755 {} +
+    find "${pkgdir}/usr/share/webapps/${pkgname}" -type f -exec chmod 644 {} +
+
+    install -Dm644 packaging/wedding-website-api.service \
+        "${pkgdir}/usr/lib/systemd/system/wedding-website-api.service"
+    install -Dm644 packaging/wedding-website.nginx.conf \
+        "${pkgdir}/etc/nginx/conf.d/wedding-website.conf"
+
+    # The security headers every location in that file includes. Deliberately
+    # not a backup= entry: nothing in it is per-machine, and an upgrade that
+    # changes a header should be able to land it without a .pacnew to merge.
+    install -Dm644 packaging/wedding-website.headers.conf \
+        "${pkgdir}/etc/nginx/wedding-website.headers.conf"
+
+    # The service's environment: the password for the admin dashboard and the
+    # handful of settings worth changing without a rebuild. systemd reads it
+    # with EnvironmentFile=, so the binary keeps reading plain environment
+    # variables and knows nothing about the file. Root-only, because of the
+    # password, and listed in backup=() so an upgrade never overwrites it.
+    install -Dm600 packaging/wedding-website.env \
+        "${pkgdir}/etc/wedding-website/wedding-website.env"
+
+    install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    install -Dm644 packaging/README.md "${pkgdir}/usr/share/doc/${pkgname}/DEPLOY.md"
+    install -Dm755 packaging/generate-self-signed-cert.sh \
+        "${pkgdir}/usr/share/doc/${pkgname}/generate-self-signed-cert.sh"
+}

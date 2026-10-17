@@ -1,0 +1,27 @@
+target/
+.sass-cache/
+.env
+database.*
+result
+.DS_Store
+
+# Gallery originals. These live in the photo bucket the page fetches from
+# directly (see PHOTO_BASE in src/frontend/src/pages/landing.rs) and are
+# deliberately not tracked here — sixteen megabytes of JPEG that git would
+# keep a copy of in every clone, forever, for no gain.
+more_pics/
+
+# Packaging artifacts from makepkg
+packaging/src/
+packaging/pkg/
+packaging/*.pkg.tar.zst
+packaging/*.log
+packaging/wedding-website/
+
+# Claude Code session state: worktrees holding whole second checkouts, lock
+# files. The skills and the dev-server config are the parts worth tracking.
+.claude/*
+!.claude/skills/
+!.claude/launch.json
+dist/
+.build-cache/

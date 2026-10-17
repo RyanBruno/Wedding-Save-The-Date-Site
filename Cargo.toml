@@ -1,0 +1,65 @@
+[workspace]
+members = ["src/frontend", "src/backend", "src/shared"]
+resolver = "2"
+
+# ── Shared dependency versions ────────────────────────────────────────────────
+
+[workspace.dependencies]
+leptos              = { version = "0.8", default-features = false }
+leptos_meta         = { version = "0.8", default-features = false }
+leptos_router       = { version = "0.8", default-features = false }
+leptos_axum         = { version = "0.8" }
+leptos_router_macro = { version = "0.8" }
+
+axum          = { version = "0.8" }
+axum-macros   = { version = "0.5" }
+tokio         = { version = "1", features = ["rt-multi-thread"] }
+tower         = { version = "0.5" }
+tower-http    = { version = "0.6", features = ["fs", "compression-gzip", "trace", "cors", "set-header"] }
+
+sqlx          = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid", "chrono", "migrate"] }
+dotenvy       = "0.15"
+
+serde         = { version = "1", features = ["derive"] }
+serde_json    = "1"
+
+# Admin dashboard only: session tokens, and a comparison for the password that
+# does not leak its length or prefix through timing.
+rand          = "0.9"
+subtle        = "2.6"
+
+tracing             = "0.1"
+tracing-subscriber  = { version = "0.3", features = ["env-filter"] }
+
+wasm-bindgen             = "=0.2.121"
+js-sys                   = "0.3"
+
+# ── cargo-leptos build configuration ─────────────────────────────────────────
+
+[[workspace.metadata.leptos]]
+name            = "website"
+bin-package     = "server"
+lib-package     = "frontend"
+output-name     = "website"
+site-root       = "target/site"
+site-pkg-dir    = "pkg"
+assets-dir      = "src/frontend/public/"
+style-file      = "src/frontend/style/main.scss"
+# Puts a content hash in the JS, WASM and CSS filenames, and records what it
+# chose in hash.txt. That is what lets the CDN keep everything under /pkg/
+# forever: a changed build is a changed URL, so there is no cache to purge and
+# no window in which a stale asset is served against fresh HTML. The names are
+# read back at render time by HydrationScripts and HashedStylesheet, which look
+# for hash.txt beside the running binary.
+hash-files      = true
+# 0.0.0.0 rather than 127.0.0.1 so the dev server is reachable from the other
+# machines on the tailnet, not only from this one. reload-port is bound on the
+# same address, so live reload follows. This alone exposes nothing to the LAN:
+# the host firewall admits 3000 and 3001 on the tailscale0 interface only.
+site-addr       = "0.0.0.0:3000"
+reload-port     = 3001
+browserquery    = "defaults"
+env             = "DEV"
+bin-default-features = true
+lib-features    = ["hydrate"]
+lib-default-features = false

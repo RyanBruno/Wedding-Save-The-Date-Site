@@ -1,0 +1,86 @@
+[Unit]
+Description=Wedding website RSVP API
+Documentation=file:/usr/share/doc/wedding-website/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/wedding-website-api
+Restart=on-failure
+RestartSec=5s
+
+# The binary prerenders the site into LEPTOS_SITE_ROOT on every start before it
+# opens the port. The deployed HTML comes from the package, so that run is
+# redundant here and is pointed at a scratch directory inside the state
+# directory, which is the only place the service can write.
+#
+# Deliberately no LEPTOS_HASH_FILES here, even though the build sets it: the
+# hash file sits beside the binary that cargo-leptos produced, not beside
+# /usr/bin/wedding-website-api, so turning it on would log "File hashing is
+# active but no hash file was found" on every start and change nothing about
+# the HTML anybody is served.
+ExecStartPre=/usr/bin/mkdir -p /var/lib/wedding-website/generated
+
+# Defaults, and only defaults: systemd applies EnvironmentFile= after
+# Environment=, so anything set in the configuration file below wins over these.
+# They stay here so the service still starts when that file is emptied.
+Environment=DATABASE_URL=sqlite:/var/lib/wedding-website/database.db
+Environment=LEPTOS_SITE_ADDR=127.0.0.1:3000
+Environment=LEPTOS_SITE_ROOT=/var/lib/wedding-website/generated
+Environment=LEPTOS_SITE_PKG_DIR=pkg
+Environment=LEPTOS_OUTPUT_NAME=website
+Environment=LEPTOS_ENV=PROD
+Environment=RUST_LOG=info
+
+# The configuration file, installed by the package at 0600 and left alone by
+# upgrades. It carries ADMIN_PASSWORD, which cannot be an Environment= line
+# here: this unit is world-readable under /usr/lib/systemd/system and
+# `systemctl show` would print it to anyone who asked. RSVP_ALLOWED_ORIGINS
+# lives there too, unset by default — nginx proxies /api/ on the same origin as
+# the page, so submissions are not cross-origin and need no allow-list.
+#
+# The binary reads environment variables and nothing else; this file is how
+# systemd puts them there. The leading `-` keeps the service startable if the
+# file is deleted, in which case the dashboard answers 503 until it is back.
+EnvironmentFile=-/etc/wedding-website/wedding-website.env
+
+# Read last, so it wins: where machines set up before the packaged file above
+# existed keep their ADMIN_PASSWORD.
+EnvironmentFile=-/etc/wedding-website/admin.env
+
+WorkingDirectory=/var/lib/wedding-website
+StateDirectory=wedding-website
+StateDirectoryMode=0700
+
+# The service owns nothing but its SQLite file, so it runs as a transient user
+# with essentially everything else taken away.
+DynamicUser=yes
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectProc=invisible
+ProcSubset=pid
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wedding-site",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["LEPTOS_SITE_ADDR=127.0.0.1:3010", "LEPTOS_RELOAD_PORT=3011", "cargo", "leptos", "watch"],
+      "port": 3010
+    }
+  ]
+}
