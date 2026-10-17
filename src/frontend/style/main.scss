@@ -265,56 +265,44 @@ button { color: inherit; }
 
 .std-flap {
     position: absolute;
+    top: 2%;
     z-index: 3;
-    overflow: hidden;
-    background: var(--pastel-blue);
-    border: 1px solid rgba(64, 77, 119, .16);
+    width: 58%;
+    height: 96%;
     backface-visibility: hidden;
     transform-style: preserve-3d;
     will-change: transform;
 }
 
-.std-flap--left,
-.std-flap--right {
-    top: 0;
-    width: 51%;
-    height: 100%;
+.std-flap::before {
+    content: '';
+    position: absolute;
+    inset: 3%;
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, .96) 0 14%, transparent 29%),
+        radial-gradient(circle at 78% 25%, rgba(205, 223, 233, .95) 0 18%, transparent 34%),
+        radial-gradient(circle at 35% 72%, rgba(248, 252, 253, .98) 0 23%, transparent 40%),
+        radial-gradient(circle at 80% 78%, rgba(174, 190, 213, .82) 0 20%, transparent 38%),
+        linear-gradient(135deg, rgba(238, 246, 248, .95), rgba(205, 223, 233, .9));
+    box-shadow: 0 24px 40px rgba(37, 49, 81, .18);
 }
 
 .std-flap--left {
     left: 0;
-    clip-path: polygon(0 0, 100% 50%, 0 100%);
     transform-origin: left center;
-    background: linear-gradient(115deg, var(--light-azure), var(--pastel-blue));
+}
+
+.std-flap--left::before {
+    border-radius: 17% 46% 54% 20% / 20% 56% 44% 17%;
 }
 
 .std-flap--right {
     right: 0;
-    clip-path: polygon(100% 0, 0 50%, 100% 100%);
     transform-origin: right center;
-    background: linear-gradient(245deg, var(--light-azure), var(--pastel-blue));
 }
 
-.std-flap--top,
-.std-flap--bottom {
-    left: 0;
-    width: 100%;
-    height: 51%;
-    z-index: 4;
-}
-
-.std-flap--top {
-    top: 0;
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
-    transform-origin: center top;
-    background: linear-gradient(180deg, var(--grey-blue), var(--pastel-blue));
-}
-
-.std-flap--bottom {
-    bottom: 0;
-    clip-path: polygon(0 100%, 100% 100%, 50% 0);
-    transform-origin: center bottom;
-    background: linear-gradient(0deg, var(--sage-green), var(--pastel-blue));
+.std-flap--right::before {
+    border-radius: 46% 17% 20% 54% / 56% 20% 17% 44%;
 }
 
 .std-cover-copy {
@@ -325,9 +313,9 @@ button { color: inherit; }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: var(--paper);
+    color: var(--dark-blue);
     text-align: center;
-    text-shadow: 0 2px 14px rgba(37, 49, 81, .3);
+    text-shadow: 0 1px 12px rgba(255, 255, 255, .92);
     pointer-events: none;
 }
 
@@ -340,11 +328,41 @@ button { color: inherit; }
 }
 
 .std-cover-copy strong {
-    margin: 7px 0 22px;
+    margin: 2px 0 18px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(62px, 9vw, 118px);
+    font-size: clamp(48px, 6vw, 78px);
     font-weight: 500;
     line-height: .9;
+}
+
+.std-shell-seal {
+    width: clamp(84px, 9vw, 116px);
+    aspect-ratio: 1;
+    margin: 10px 0 4px;
+    filter: drop-shadow(0 8px 9px rgba(37, 49, 81, .22));
+    transform: rotate(-2deg);
+}
+
+.std-shell-seal svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.std-shell-seal__wax {
+    fill: #eef8fb;
+    stroke: rgba(255, 255, 255, .96);
+    stroke-width: 4;
+    stroke-linejoin: round;
+}
+
+.std-shell-seal__line,
+.std-shell-seal__rim {
+    fill: none;
+    stroke: rgba(133, 155, 186, .72);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .std-cover-copy small::after {
@@ -364,38 +382,43 @@ button { color: inherit; }
 
 .std-hydrangeas {
     position: absolute;
-    width: 220px;
-    height: 190px;
-    filter: drop-shadow(0 8px 8px rgba(37, 49, 81, .14));
+    inset: -2%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    place-items: center;
+    filter: drop-shadow(0 7px 7px rgba(37, 49, 81, .12));
 }
 
-.std-flap--top .std-hydrangeas { top: -20px; left: calc(50% - 110px); }
-.std-flap--bottom .std-hydrangeas { right: 9%; bottom: -14px; transform: rotate(16deg); }
-.std-flap--left .std-hydrangeas { left: -28px; top: 30%; transform: rotate(-18deg); }
-.std-flap--right .std-hydrangeas { right: -34px; top: 15%; transform: rotate(20deg); }
+.std-flap--left .std-hydrangeas { transform: rotate(-1deg); }
+.std-flap--right .std-hydrangeas { transform: rotate(1deg); }
 
 .std-hydrangeas i {
-    position: absolute;
-    width: 64px;
-    height: 64px;
+    width: clamp(66px, 7.2vw, 98px);
+    aspect-ratio: 1;
     border-radius: 50%;
     background:
-        radial-gradient(circle at 50% 50%, var(--butter-yellow) 0 5%, transparent 6%),
-        radial-gradient(ellipse at 50% 18%, var(--light-azure) 0 21%, transparent 22%),
-        radial-gradient(ellipse at 82% 50%, var(--pastel-blue) 0 21%, transparent 22%),
-        radial-gradient(ellipse at 50% 82%, var(--grey-blue) 0 21%, transparent 22%),
-        radial-gradient(ellipse at 18% 50%, var(--light-azure) 0 21%, transparent 22%);
+        radial-gradient(circle at 50% 50%, var(--butter-yellow) 0 4%, transparent 5%),
+        radial-gradient(ellipse at 50% 18%, #fbfdfc 0 23%, transparent 24%),
+        radial-gradient(ellipse at 82% 50%, #eef7fa 0 23%, transparent 24%),
+        radial-gradient(ellipse at 50% 82%, var(--light-azure) 0 23%, transparent 24%),
+        radial-gradient(ellipse at 18% 50%, #f8fbfb 0 23%, transparent 24%);
 }
 
-.std-hydrangeas i:nth-child(1) { left: 76px; top: 6px; transform: rotate(9deg) scale(1.08); }
-.std-hydrangeas i:nth-child(2) { left: 34px; top: 30px; transform: rotate(-13deg) scale(.92); }
-.std-hydrangeas i:nth-child(3) { left: 115px; top: 32px; transform: rotate(24deg); }
-.std-hydrangeas i:nth-child(4) { left: 5px; top: 73px; transform: rotate(7deg) scale(.78); }
-.std-hydrangeas i:nth-child(5) { left: 72px; top: 68px; transform: rotate(-28deg) scale(1.18); }
-.std-hydrangeas i:nth-child(6) { left: 143px; top: 76px; transform: rotate(19deg) scale(.87); }
-.std-hydrangeas i:nth-child(7) { left: 36px; top: 112px; transform: rotate(30deg) scale(.82); }
-.std-hydrangeas i:nth-child(8) { left: 106px; top: 119px; transform: rotate(-8deg); }
-.std-hydrangeas i:nth-child(9) { left: 155px; top: 124px; transform: rotate(14deg) scale(.7); }
+.std-hydrangeas i:nth-child(5n + 1) { transform: rotate(-12deg) scale(1.12); }
+.std-hydrangeas i:nth-child(5n + 2) { transform: rotate(9deg) scale(.92); }
+.std-hydrangeas i:nth-child(5n + 3) { transform: rotate(22deg) scale(1.06); }
+.std-hydrangeas i:nth-child(5n + 4) { transform: rotate(-24deg) scale(.86); }
+.std-hydrangeas i:nth-child(5n + 5) { transform: rotate(5deg) scale(1.16); }
+
+.std-hydrangeas i:nth-child(4n) {
+    background:
+        radial-gradient(circle at 50% 50%, var(--butter-yellow) 0 4%, transparent 5%),
+        radial-gradient(ellipse at 50% 18%, #f7fbfc 0 23%, transparent 24%),
+        radial-gradient(ellipse at 82% 50%, var(--light-azure) 0 23%, transparent 24%),
+        radial-gradient(ellipse at 50% 82%, #edf5f8 0 23%, transparent 24%),
+        radial-gradient(ellipse at 18% 50%, var(--pastel-blue) 0 23%, transparent 24%);
+}
 
 .std-gallery {
     position: relative;
@@ -549,10 +572,11 @@ button { color: inherit; }
     .std-details strong { font-size: 21px; }
     .std-details p { font-size: 10px; }
 
-    .std-hydrangeas { transform: scale(.75); }
-    .std-flap--bottom .std-hydrangeas { transform: rotate(16deg) scale(.75); }
-    .std-flap--left .std-hydrangeas { transform: rotate(-18deg) scale(.75); }
-    .std-flap--right .std-hydrangeas { transform: rotate(20deg) scale(.75); }
+    .std-flap { width: 62%; }
+    .std-hydrangeas {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+    }
 
     .std-gallery { padding-top: 90px; }
     .std-gallery__header { margin-bottom: 44px; }
@@ -568,7 +592,8 @@ button { color: inherit; }
     .std-place { letter-spacing: .2em; }
     .std-gallery-link { margin-top: 20px; }
     .std-details p { max-width: 120px; margin: auto; }
-    .std-cover-copy strong { font-size: 64px; }
+    .std-cover-copy strong { font-size: 48px; }
+    .std-shell-seal { width: 82px; }
     .std-gallery { padding-right: 12px; padding-left: 12px; }
     .std-footer { gap: 18px; letter-spacing: .12em; }
     .std-lightbox { grid-template-columns: 42px minmax(0, 1fr) 42px; padding-right: 0; padding-left: 0; }

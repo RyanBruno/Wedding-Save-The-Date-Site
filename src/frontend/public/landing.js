@@ -23,8 +23,6 @@
 
         var left = invite.querySelector('.std-flap--left');
         var right = invite.querySelector('.std-flap--right');
-        var top = invite.querySelector('.std-flap--top');
-        var bottom = invite.querySelector('.std-flap--bottom');
         var cover = invite.querySelector('.std-cover-copy');
         var card = invite.querySelector('.std-card');
         var cardContent = card.querySelectorAll('.std-kicker, h1, .std-date, .std-place, .std-details, .std-gallery-link, .std-card__rule');
@@ -32,8 +30,6 @@
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             gsap.set(left, { rotateY: -105, xPercent: -10 });
             gsap.set(right, { rotateY: 105, xPercent: 10 });
-            gsap.set(top, { rotateX: 105, yPercent: -10 });
-            gsap.set(bottom, { rotateX: -105, yPercent: 10 });
             gsap.set(cover, { autoAlpha: 0 });
             return;
         }
@@ -47,17 +43,17 @@
                 trigger: opening,
                 start: 'top top',
                 end: 'bottom bottom',
-                scrub: .7,
+                // Direct scroll binding makes both flaps close immediately
+                // and exactly when the guest scrolls back up.
+                scrub: true,
                 invalidateOnRefresh: true,
             },
         });
 
         openingTimeline
             .to(cover, { autoAlpha: 0, y: -22, duration: .12 }, 0)
-            .to(top, { rotateX: 112, yPercent: -8, duration: .55 }, .05)
-            .to(bottom, { rotateX: -112, yPercent: 8, duration: .55 }, .05)
-            .to(left, { rotateY: -112, xPercent: -8, duration: .55 }, .12)
-            .to(right, { rotateY: 112, xPercent: 8, duration: .55 }, .12)
+            .to(left, { rotateY: -112, xPercent: -10, duration: .62 }, .06)
+            .to(right, { rotateY: 112, xPercent: 10, duration: .62 }, .06)
             .to(card, { scale: 1, duration: .28 }, .42)
             .to(cardContent, {
                 autoAlpha: 1,

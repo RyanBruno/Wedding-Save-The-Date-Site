@@ -27,7 +27,20 @@ const GALLERY: [(&str, u32, u32); 18] = [
 fn Hydrangeas() -> impl IntoView {
     view! {
         <div class="std-hydrangeas" aria-hidden="true">
-            {(0..9).map(|_| view! { <i></i> }).collect_view()}
+            {(0..30).map(|_| view! { <i></i> }).collect_view()}
+        </div>
+    }
+}
+
+#[component]
+fn SeashellSeal() -> impl IntoView {
+    view! {
+        <div class="std-shell-seal" aria-hidden="true">
+            <svg viewBox="0 0 120 120">
+                <path class="std-shell-seal__wax" d="M60 106C49 91 28 89 17 71C7 55 12 36 25 27C33 21 42 22 49 29C53 14 67 14 71 29C78 22 87 21 95 27C108 36 113 55 103 71C92 89 71 91 60 106Z"/>
+                <path class="std-shell-seal__line" d="M60 101V25M60 101L31 30M60 101L46 24M60 101L74 24M60 101L89 30M60 101L18 57M60 101L102 57"/>
+                <path class="std-shell-seal__rim" d="M17 71C34 75 44 71 60 106C76 71 86 75 103 71"/>
+            </svg>
         </div>
     }
 }
@@ -130,11 +143,10 @@ pub fn Landing() -> impl IntoView {
 
                         <div class="std-flap std-flap--left" aria-hidden="true"><Hydrangeas/></div>
                         <div class="std-flap std-flap--right" aria-hidden="true"><Hydrangeas/></div>
-                        <div class="std-flap std-flap--top" aria-hidden="true"><Hydrangeas/></div>
-                        <div class="std-flap std-flap--bottom" aria-hidden="true"><Hydrangeas/></div>
 
                         <div class="std-cover-copy" aria-hidden="true">
                             <span>"Save the date"</span>
+                            <SeashellSeal/>
                             <strong>"C & R"</strong>
                             <small>"Scroll to open"</small>
                         </div>
