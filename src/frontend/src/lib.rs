@@ -1,5 +1,5 @@
 // The hydration path instantiates the same `into_any()` view type the server
-// renders, so this needs the headroom `src/backend/src/main.rs` already takes.
+// renders, so this needs the same headroom as the static site generator.
 // Only the release build trips it: the extra layout work it does crosses the
 // default limit that debug stays just inside of.
 #![recursion_limit = "1024"]

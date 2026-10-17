@@ -1,13 +1,6 @@
 # Maintainer: Ryan Bruno <ryanbruno506@gmail.com>
 #
-# Packages both halves of the deployment described in the README:
-#
-#   /usr/share/webapps/wedding-website   the prerendered site, served by nginx
-#   /usr/bin/wedding-website-api         the Axum service behind /api/rsvp
-#
-# The site is built same-origin: RSVP_API_BASE is left empty so the form posts
-# to /api/rsvp on whatever host serves the page, and nginx proxies that prefix
-# through to the API. Nothing has to be rebuilt when the domain changes.
+# Packages the prerendered site for nginx.
 #
 # cargo-leptos and wasm-bindgen-cli 0.2.100 are not in the Arch repositories, so
 # they cannot be listed as makedepends. Install them once before building:
@@ -22,16 +15,13 @@
 pkgname=wedding-website
 pkgver=0.1.0.r60.gefa2b0b
 pkgrel=2
-pkgdesc="Cameron & Ryan save-the-date site with retained deployment API"
-arch=('x86_64')
+pkgdesc="Cameron & Ryan save-the-date site"
+arch=('any')
 url="https://github.com/RyanBruno/Wedding-Website"
 license=('custom')
-depends=('glibc' 'gcc-libs')
 makedepends=('git' 'git-lfs' 'rustup' 'binaryen' 'dart-sass')
-optdepends=('nginx: serves the static site and terminates TLS'
-            'sqlite: read the RSVP replies out of the database')
-backup=('etc/nginx/conf.d/wedding-website.conf'
-        'etc/wedding-website/wedding-website.env')
+optdepends=('nginx: serves the static site and terminates TLS')
+backup=('etc/nginx/conf.d/wedding-website.conf')
 install="${pkgname}.install"
 options=('!lto')
 
@@ -91,20 +81,13 @@ build() {
     # stops a rustup override elsewhere on the machine from winning.
     export RUSTUP_TOOLCHAIN=nightly
 
-    # Empty means same-origin. nginx proxies /api/ to the service on localhost,
-    # so the WASM never needs an absolute API origin baked into it.
-    export RSVP_API_BASE=""
-
-    # Compiles the WASM and CSS, then runs the server binary once with
+    # Compiles the WASM and CSS, then runs the local site server once with
     # --generate-only to prerender every route into target/site.
     ./scripts/build-site.sh --release
 }
 
 package() {
     cd "${srcdir}/${pkgname}"
-
-    install -Dm755 target/release/server \
-        "${pkgdir}/usr/bin/wedding-website-api"
 
     install -dm755 "${pkgdir}/usr/share/webapps/${pkgname}"
     cp -r target/site/. "${pkgdir}/usr/share/webapps/${pkgname}/"
@@ -117,8 +100,6 @@ package() {
     find "${pkgdir}/usr/share/webapps/${pkgname}" -type d -exec chmod 755 {} +
     find "${pkgdir}/usr/share/webapps/${pkgname}" -type f -exec chmod 644 {} +
 
-    install -Dm644 packaging/wedding-website-api.service \
-        "${pkgdir}/usr/lib/systemd/system/wedding-website-api.service"
     install -Dm644 packaging/wedding-website.nginx.conf \
         "${pkgdir}/etc/nginx/conf.d/wedding-website.conf"
 
@@ -127,14 +108,6 @@ package() {
     # changes a header should be able to land it without a .pacnew to merge.
     install -Dm644 packaging/wedding-website.headers.conf \
         "${pkgdir}/etc/nginx/wedding-website.headers.conf"
-
-    # The service's environment: the password for the admin dashboard and the
-    # handful of settings worth changing without a rebuild. systemd reads it
-    # with EnvironmentFile=, so the binary keeps reading plain environment
-    # variables and knows nothing about the file. Root-only, because of the
-    # password, and listed in backup=() so an upgrade never overwrites it.
-    install -Dm600 packaging/wedding-website.env \
-        "${pkgdir}/etc/wedding-website/wedding-website.env"
 
     install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
     install -Dm644 packaging/README.md "${pkgdir}/usr/share/doc/${pkgname}/DEPLOY.md"

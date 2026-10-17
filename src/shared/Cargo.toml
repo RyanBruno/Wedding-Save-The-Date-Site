@@ -1,9 +1,0 @@
-[package]
-name    = "shared"
-version = "0.1.0"
-edition = "2021"
-
-# Only WASM-compatible deps — this crate is compiled for both native and wasm32.
-
-[dependencies]
-serde        = { workspace = true }

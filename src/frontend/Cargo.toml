@@ -7,34 +7,19 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-shared              = { path = "../shared" }
 leptos              = { workspace = true }
 leptos_meta         = { workspace = true }
 leptos_router       = { workspace = true }
 leptos_router_macro = { workspace = true }
-serde               = { workspace = true }
-
-# SSR-only
-leptos_axum = { workspace = true, optional = true }
-tokio       = { workspace = true, optional = true }
-axum        = { workspace = true, optional = true }
-sqlx        = { workspace = true, optional = true }
 
 # Hydrate-only (WASM)
 wasm-bindgen             = { workspace = true, optional = true }
 js-sys                   = { workspace = true, optional = true }
-gloo-net                 = { version = "0.6", default-features = false, features = ["http", "json"], optional = true }
 
 [dependencies.web-sys]
 version = "0.3"
 features = [
-  "TouchEvent",
-  "TouchList",
-  "Touch",
-  "IntersectionObserver",
-  "IntersectionObserverEntry",
   "KeyboardEvent",
-  "Navigator",
   "Window",
 ]
 
@@ -43,14 +28,9 @@ hydrate = [
   "leptos/hydrate",
   "dep:wasm-bindgen",
   "dep:js-sys",
-  "dep:gloo-net",
 ]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "dep:leptos_axum",
-  "dep:tokio",
-  "dep:axum",
-  "dep:sqlx",
 ]

@@ -49,17 +49,9 @@
         # prerenders every route into `target/site` and exits. That directory is
         # the complete deployable site and needs no server to host it.
         #
-        # `$out/share/site` -> the whole site, as files.
-        # `$out/bin/website-api` -> run somewhere with the SQLite file; serves
-        #                           `/api` (RSVP replies) and nothing else.
+        # `$out/share/site` contains the complete deployable site.
         website = craneLib.buildPackage (commonArgs // {
           inherit cargoArtifacts;
-
-          # RSVP_API_BASE is read at compile time by the frontend and baked into
-          # the WASM. Leave it empty for a same-origin deployment, which is how
-          # this is served: nginx proxies /api/ on the host that serves the
-          # page. Set it only if the API ever moves to its own hostname.
-          RSVP_API_BASE = "";
 
           # Through the script rather than the two commands it wraps: it is
           # what exports LEPTOS_HASH_FILES for the generator — without which
@@ -72,8 +64,7 @@
           doNotPostBuildInstallCargoBinaries = true;
 
           installPhaseCommand = ''
-            mkdir -p $out/bin $out/share
-            cp target/release/server $out/bin/website-api
+            mkdir -p $out/share
             cp -r target/site $out/share/site
           '';
         });

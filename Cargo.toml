@@ -1,5 +1,5 @@
 [workspace]
-members = ["src/frontend", "src/backend", "src/shared"]
+members = ["src/frontend", "src/server"]
 resolver = "2"
 
 # ── Shared dependency versions ────────────────────────────────────────────────
@@ -12,24 +12,8 @@ leptos_axum         = { version = "0.8" }
 leptos_router_macro = { version = "0.8" }
 
 axum          = { version = "0.8" }
-axum-macros   = { version = "0.5" }
 tokio         = { version = "1", features = ["rt-multi-thread"] }
-tower         = { version = "0.5" }
-tower-http    = { version = "0.6", features = ["fs", "compression-gzip", "trace", "cors", "set-header"] }
-
-sqlx          = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid", "chrono", "migrate"] }
-dotenvy       = "0.15"
-
-serde         = { version = "1", features = ["derive"] }
-serde_json    = "1"
-
-# Admin dashboard only: session tokens, and a comparison for the password that
-# does not leak its length or prefix through timing.
-rand          = "0.9"
-subtle        = "2.6"
-
-tracing             = "0.1"
-tracing-subscriber  = { version = "0.3", features = ["env-filter"] }
+tower-http    = { version = "0.6", features = ["fs"] }
 
 wasm-bindgen             = "=0.2.121"
 js-sys                   = "0.3"
@@ -38,7 +22,7 @@ js-sys                   = "0.3"
 
 [[workspace.metadata.leptos]]
 name            = "website"
-bin-package     = "server"
+bin-package     = "site-server"
 lib-package     = "frontend"
 output-name     = "website"
 site-root       = "target/site"

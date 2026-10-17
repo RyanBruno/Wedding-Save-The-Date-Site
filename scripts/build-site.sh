@@ -7,17 +7,14 @@
 #   1. `cargo leptos build` compiles the WASM and CSS into target/site/pkg and
 #      copies the assets across. It also CLEARS target/site first, so it never
 #      leaves prerendered HTML behind.
-#   2. The server binary writes the HTML. Run with `--generate-only` it renders
-#      every route into target/site and exits without opening a port or touching
-#      the database.
+#   2. The local site server writes the HTML. With `--generate-only` it renders
+#      every route into target/site and exits without opening a port.
 #
 # Pass --release for a deployable build: that sets the Leptos env to PROD, which
 # drops the dev auto-reload script from the generated HTML.
 #
 #   ./scripts/build-site.sh --release
 #
-# Set RSVP_API_BASE when the API will live on a different origin than the CDN;
-# it is baked into the WASM at compile time.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -37,7 +34,7 @@ cargo leptos build "$@"
 # Without it the prerendered HTML points at /pkg/website.css while the file on
 # disk is website.<hash>.css — every asset a 404, and every one of them held by
 # the CDN for a year under the immutable headers in the nginx config.
-LEPTOS_HASH_FILES=true "./target/$profile/server" --generate-only
+LEPTOS_HASH_FILES=true "./target/$profile/site-server" --generate-only
 
 # ...which is worth checking rather than trusting, for exactly that reason.
 if grep -qF '/pkg/website.css' target/site/index.html; then

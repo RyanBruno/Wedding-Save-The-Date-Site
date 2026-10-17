@@ -2,7 +2,7 @@ post_install() {
     cat <<'MSG'
 ==> wedding-website installed.
 
-    Four steps are still needed on a fresh machine:
+    Three steps are still needed on a fresh machine:
 
       1. Generate the TLS certificate (self-signed for now):
            sudo /usr/share/doc/wedding-website/generate-self-signed-cert.sh
@@ -11,42 +11,14 @@ post_install() {
          /etc/nginx/nginx.conf, and comment out its default server block:
            include conf.d/*.conf;
 
-      3. Set the admin dashboard's password (it stays off until you do).
-         Put it in ADMIN_PASSWORD= in the configuration file, which systemd
-         hands to the service as environment variables:
-           sudo nano /etc/wedding-website/wedding-website.env
-
-         The same file carries the other settings worth changing without a
-         rebuild. It is root-only and pacman leaves your edits alone.
-
-      4. Start both services:
-           sudo systemctl enable --now wedding-website-api.service
+      3. Start nginx:
            sudo systemctl enable --now nginx.service
-
-    The dashboard is then at https://<your host>/api/admin — the whole guest
-    list, the replies, and an editor for both. It is served by the API process,
-    not from the packaged site, so it exists on this machine alone.
-
-    Replies land in /var/lib/wedding-website/database.db (root-readable only):
-      sudo sqlite3 /var/lib/wedding-website/database.db "
-        SELECT i.name, r.attending, n.note
-        FROM rsvps r
-        JOIN invitees i ON i.id = r.invitee_id
-        LEFT JOIN party_notes n ON n.party_id = i.party_id
-        ORDER BY r.updated_at DESC;"
 MSG
 }
 
 post_upgrade() {
-    echo '==> Restart the API and reload nginx to pick up the new build:'
-    echo '      sudo systemctl restart wedding-website-api.service'
+    echo '==> Reload nginx to pick up the new build:'
     echo '      sudo systemctl reload nginx.service'
-
-    if [ -f /etc/wedding-website/wedding-website.env.pacnew ]; then
-        echo '==> The shipped configuration changed. Your settings were kept;'
-        echo '    the new template is beside them, so merge what you want:'
-        echo '      sudo diff -u /etc/wedding-website/wedding-website.env{,.pacnew}'
-    fi
 
     if [ -f /etc/nginx/conf.d/wedding-website.conf.pacnew ]; then
         echo '==> The nginx config changed and your copy was kept, so the site is'
@@ -57,8 +29,4 @@ post_upgrade() {
         echo '    Keep your ssl_certificate paths; take everything else.'
         echo '      sudo nginx -t && sudo systemctl reload nginx.service'
     fi
-}
-
-post_remove() {
-    echo '==> /var/lib/wedding-website was left in place; it holds the RSVP database.'
 }

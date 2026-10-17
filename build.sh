@@ -141,12 +141,12 @@ podman run --rm \
     "$image" bash -euo pipefail -c '
     # A writable copy of the working tree. What is left out is either wrong for
     # the container (target/ holds this host'"'"'s object files, result is the nix
-    # build symlink), or has no business in a build at all: the live database,
-    # the .env with its secrets, the untracked photo scratch directory, and
+    # build symlink), or has no business in a build at all: local environment
+    # files, the untracked photo scratch directory, and
     # this script'"'"'s own output.
     mkdir -p /home/builder/work
     tar -C /src -cf - \
-        --exclude=./target --exclude=./result --exclude=./database.db \
+        --exclude=./target --exclude=./result \
         --exclude=./.env --exclude=./more_pics --exclude=./.sass-cache \
         --exclude=./dist --exclude=./.build-cache \
         . | tar -C /home/builder/work -xf -

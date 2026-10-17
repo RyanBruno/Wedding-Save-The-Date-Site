@@ -4,7 +4,7 @@
 #
 #   1. fast-forward this working copy from GitHub
 #   2. build the pacman package in packaging/
-#   3. install the package and restart the API
+#   3. install the package and reload nginx
 #
 #   ./scripts/update-server.sh
 #
@@ -114,11 +114,6 @@ step "Installing the package"
 
 $sudo pacman -U --noconfirm "$package"
 
-# The unit files may have been replaced by the install; reload systemd before
-# restarting so the running service picks up the version just written.
-$sudo systemctl daemon-reload
-$sudo systemctl restart wedding-website-api.service
-
 # nginx only serves this machine's copy of the site, and its config is a backup=
 # file pacman leaves alone on upgrade, so a reload is enough — and it is skipped
 # entirely if nginx is not running on this host.
@@ -128,4 +123,3 @@ if $sudo systemctl is-active --quiet nginx.service; then
 fi
 
 step "Done"
-systemctl --no-pager --lines=0 status wedding-website-api.service || true

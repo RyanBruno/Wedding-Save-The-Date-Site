@@ -3,11 +3,11 @@
 # Installs a package built by ./build.sh onto the machine that serves the site.
 #
 #     ./build.sh      # writes dist/wedding-website-*.pkg.tar.zst
-#     ./deploy.sh     # copies that over, installs it, restarts the service
+#     ./deploy.sh     # copies that over, installs it, reloads nginx
 #
 # This is the counterpart to build.sh and covers the whole deployment: the
-# site, the assets and the RSVP API all come off this one machine, so there is
-# nothing to upload anywhere. The CDN in front of it is a pull cache that
+# site and assets come off this one machine, so there is nothing else to
+# upload. The CDN in front of it is a pull cache that
 # fetches from this box, and the cache headers it obeys ship in the package.
 #
 # Not to be confused with scripts/update-server.sh either: that one runs *on*
@@ -121,11 +121,6 @@ fi
 echo "installed before: $(pacman -Q wedding-website 2>/dev/null || echo 'not installed')"
 sudo pacman -U --noconfirm "$remote_package"
 
-# The unit file may have just been replaced; reload systemd before restarting
-# so the service that comes back up is the one that was written.
-sudo systemctl daemon-reload
-sudo systemctl restart wedding-website-api.service
-
 # nginx serves the static files straight out of the package, so it needs no
 # more than a reload — and it only gets one if it is actually running here.
 if sudo systemctl is-active --quiet nginx.service; then
@@ -135,7 +130,6 @@ fi
 
 printf '\n==> Installed\n'
 pacman -Q wedding-website
-systemctl is-active wedding-website-api.service
 REMOTE
 
 # ------------------------------------------------------------------ verify ---
@@ -149,7 +143,7 @@ step "Checking the site"
 site="https://${host#*@}"
 failed=0
 
-for path in / /api/admin; do
+for path in /; do
     code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "${site}${path}" || echo 000)
     printf '%-14s %s\n' "$path" "$code"
     case $code in 2*|3*) ;; *) failed=1 ;; esac
@@ -157,7 +151,7 @@ done
 
 if [ "$failed" = 1 ]; then
     echo "error: the site did not answer after the install." >&2
-    echo "       ssh $host 'journalctl -u wedding-website-api.service -n 50'" >&2
+    echo "       ssh $host 'sudo nginx -t'" >&2
     exit 1
 fi
 
