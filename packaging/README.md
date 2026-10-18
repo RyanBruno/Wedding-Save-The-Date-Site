@@ -11,7 +11,12 @@ It also installs nginx configuration at:
 ```text
 /etc/nginx/conf.d/wedding-website.conf
 /etc/nginx/wedding-website.headers.conf
+/etc/nginx/wedding-website-tls.conf
 ```
+
+The package replaces the routing, cache, and security-header files on upgrade.
+It preserves `wedding-website-tls.conf`, which contains machine-specific
+certificate paths.
 
 No API, service, database, or runtime application is required.
 
@@ -26,7 +31,7 @@ No API, service, database, or runtime application is required.
    sudo /usr/share/doc/wedding-website/generate-self-signed-cert.sh
    ```
 
-5. Replace the certificate paths in the site configuration when a real
+5. Replace both paths in `/etc/nginx/wedding-website-tls.conf` when a real
    certificate is available.
 6. Validate and start nginx:
 
@@ -35,10 +40,17 @@ No API, service, database, or runtime application is required.
    sudo systemctl enable --now nginx.service
    ```
 
-## Update on the server
+## Deploy from the build workstation
 
 ```sh
-./scripts/update-server.sh
+./build.sh
+./deploy.sh
 ```
 
-This pulls `main`, builds the package, installs it, and reloads nginx.
+The server is too small for the release WASM build. `build.sh` creates the Arch
+package in a local container. `deploy.sh` verifies, uploads, installs, and checks
+that package through the public HTTPS URL.
+
+Set another target with `--host`, and another public check URL with `--site`.
+The equivalent environment variables are `WEDDING_DEPLOY_HOST` and
+`WEDDING_SITE_URL`.

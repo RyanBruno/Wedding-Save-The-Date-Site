@@ -12,8 +12,8 @@
 #
 #   makepkg -si
 
-pkgname=wedding-std
-pkgver=0.1.0.r1.c0c1a950
+pkgname=wedding-website
+pkgver=0.1.0.r16.gc5c9b8c
 pkgrel=1
 pkgdesc="Cameron & Ryan save-the-date site"
 arch=('any')
@@ -21,7 +21,7 @@ url="https://github.com/RyanBruno/Wedding-Save-The-Date-Site"
 license=('custom')
 makedepends=('git' 'git-lfs' 'rustup' 'binaryen' 'dart-sass')
 optdepends=('nginx: serves the static site and terminates TLS')
-backup=('etc/nginx/conf.d/wedding-website.conf')
+backup=('etc/nginx/wedding-website-tls.conf')
 install="${pkgname}.install"
 options=('!lto')
 
@@ -102,6 +102,12 @@ package() {
 
     install -Dm644 packaging/wedding-website.nginx.conf \
         "${pkgdir}/etc/nginx/conf.d/wedding-website.conf"
+
+    # Keep machine-specific certificate paths separate from the site and cache
+    # policy. Package upgrades can then replace the latter without producing a
+    # .pacnew that silently leaves the old policy active.
+    install -Dm644 packaging/wedding-website-tls.conf \
+        "${pkgdir}/etc/nginx/wedding-website-tls.conf"
 
     # The security headers every location in that file includes. Deliberately
     # not a backup= entry: nothing in it is per-machine, and an upgrade that

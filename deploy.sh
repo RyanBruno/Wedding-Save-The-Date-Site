@@ -24,22 +24,28 @@
 #     ./deploy.sh                        # newest package in dist/
 #     ./deploy.sh --build                # build it first, then deploy
 #     ./deploy.sh --host ryan@other.host
-#     ./deploy.sh --package dist/wedding-website-0.1.0.r56.g78ec697-1-x86_64.pkg.tar.zst
+#     ./deploy.sh --site https://example.com
+#     ./deploy.sh --package dist/wedding-website-0.1.0.r17.g1234567-1-any.pkg.tar.zst
 #
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 host=${WEDDING_DEPLOY_HOST:-ryan@66.228.36.80}
+site=${WEDDING_SITE_URL:-https://cameronandryan.com}
 package=
 build=0
 
 while [ $# -gt 0 ]; do
     case $1 in
         --host)    host=${2:?--host needs user@hostname}; shift 2 ;;
+        --site)    site=${2:?--site needs a public URL}; shift 2 ;;
         --package) package=${2:?--package needs a path}; shift 2 ;;
         --build)   build=1; shift ;;
-        -h|--help) sed -n '2,28p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'; exit 0 ;;
+        -h|--help)
+            sed -n '2,/^set -euo pipefail/p' "${BASH_SOURCE[0]}" |
+                sed 's/^# \?//; $d'
+            exit 0 ;;
         *) echo "error: unknown argument '$1'" >&2; exit 1 ;;
     esac
 done
@@ -75,9 +81,11 @@ fi
 
 package_name=$(basename "$package")
 checksum=$(sha256sum "$package" | cut -d' ' -f1)
+site=${site%/}
 
 echo "package $package_name"
 echo "host    $host"
+echo "site    $site"
 echo "sha256  $checksum"
 
 # ------------------------------------------------------------------ upload ---
@@ -115,9 +123,8 @@ fi
 # point. pacman reinstalls at the same version and downgrades to an older one
 # without further prompting under --noconfirm.
 #
-# The nginx config and the service's env file are backup=() entries in the
-# PKGBUILD, so an install leaves whatever is on the box alone — including the
-# certificate symlinks nginx reads through.
+# The package's upgrade hook retires the old RSVP service and moves existing
+# certificate paths into the dedicated, package-preserved TLS configuration.
 echo "installed before: $(pacman -Q wedding-website 2>/dev/null || echo 'not installed')"
 sudo pacman -U --noconfirm "$remote_package"
 
@@ -136,15 +143,15 @@ REMOTE
 
 step "Checking the site"
 
-# Over the public name and over TLS, which is the only way the site is served:
-# port 80 redirects. This is the last word on whether the deploy worked, so it
-# runs from here rather than on the box — a 200 through the real certificate
-# and the real nginx is what a guest gets.
-site="https://${host#*@}"
+# Over the public name and over TLS, which is separate from the SSH destination.
+# This is the last word on whether the deploy worked: a success through the real
+# certificate, CDN, and nginx is what a guest gets.
 failed=0
 
 for path in /; do
-    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "${site}${path}" || echo 000)
+    if ! code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "${site}${path}"); then
+        code=000
+    fi
     printf '%-14s %s\n' "$path" "$code"
     case $code in 2*|3*) ;; *) failed=1 ;; esac
 done
