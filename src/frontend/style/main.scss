@@ -265,35 +265,28 @@ button { color: inherit; }
 
 .std-flap {
     position: absolute;
-    top: 2%;
+    top: 0;
     z-index: 3;
-    width: 58%;
-    height: 96%;
+    width: 56%;
+    height: 100%;
     backface-visibility: hidden;
     transform-style: preserve-3d;
     will-change: transform;
+    filter: drop-shadow(0 1px 3px rgba(60, 70, 90, .18));
 }
 
-.std-flap::before {
-    content: '';
+.std-flap-art {
     position: absolute;
-    inset: 3%;
-    background:
-        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, .96) 0 14%, transparent 29%),
-        radial-gradient(circle at 78% 25%, rgba(205, 223, 233, .95) 0 18%, transparent 34%),
-        radial-gradient(circle at 35% 72%, rgba(248, 252, 253, .98) 0 23%, transparent 40%),
-        radial-gradient(circle at 80% 78%, rgba(174, 190, 213, .82) 0 20%, transparent 38%),
-        linear-gradient(135deg, rgba(238, 246, 248, .95), rgba(205, 223, 233, .9));
-    box-shadow: 0 24px 40px rgba(37, 49, 81, .18);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
 .std-flap--left {
     left: 0;
+    z-index: 4;
     transform-origin: left center;
-}
-
-.std-flap--left::before {
-    border-radius: 17% 46% 54% 20% / 20% 56% 44% 17%;
 }
 
 .std-flap--right {
@@ -301,8 +294,112 @@ button { color: inherit; }
     transform-origin: right center;
 }
 
-.std-flap--right::before {
-    border-radius: 46% 17% 20% 54% / 56% 20% 17% 44%;
+.std-flap-art--right {
+    transform: scaleX(-1);
+    transform-origin: center;
+}
+
+.std-flap-art__paper {
+    stroke: rgba(145, 158, 178, .34);
+    stroke-width: 1;
+}
+
+.std-floret__petal {
+    stroke: #a9b3c4;
+    stroke-width: .72;
+    stroke-linejoin: round;
+}
+
+.std-floret__center {
+    fill: #7a86b8;
+    stroke: #e9edf4;
+    stroke-width: .8;
+}
+
+.std-floret__center-dot {
+    fill: #d6deec;
+}
+
+.std-floret--0 { opacity: .98; }
+.std-floret--1 { opacity: .91; }
+.std-floret--2 { opacity: .95; }
+.std-floret--3 { opacity: .87; }
+
+.std-flower-head--top { filter: drop-shadow(0 1px 1px rgba(93, 106, 132, .13)); }
+.std-flower-head--middle { filter: drop-shadow(-1px 2px 1px rgba(93, 106, 132, .17)); }
+.std-flower-head--bottom { filter: drop-shadow(1px 1px 1px rgba(93, 106, 132, .14)); }
+
+.std-leaf__body {
+    stroke: #7e9463;
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+}
+
+.std-leaf__vein {
+    fill: none;
+    stroke: rgba(92, 112, 71, .62);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+}
+
+.std-flap-art--right .std-flap-leaves { transform: rotate(.8deg); transform-origin: center; }
+
+.std-wax-seal {
+    position: absolute;
+    top: 49%;
+    left: 89.3%;
+    z-index: 7;
+    width: 36%;
+    aspect-ratio: 1;
+    filter: drop-shadow(0 5px 5px rgba(45, 57, 72, .3));
+    transform: translate(-50%, -50%) rotate(-2deg) translateZ(5px);
+    pointer-events: none;
+}
+
+.std-wax-seal svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.std-wax-seal__body {
+    fill: url('#std-wax-fill');
+}
+
+.std-wax-seal__rim {
+    fill: none;
+    stroke: url('#std-wax-rim');
+    stroke-width: 13;
+}
+
+.std-wax-seal__stamp {
+    fill: rgba(101, 122, 139, .34);
+    stroke: rgba(191, 204, 214, .58);
+    stroke-width: 2;
+}
+
+.std-wax-seal__inner-shadow {
+    fill: none;
+    stroke: rgba(71, 89, 105, .46);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+}
+
+.std-wax-seal__letter {
+    fill: #92a4b3;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-style: italic;
+    font-weight: 600;
+    filter: url('#std-wax-letter');
+}
+
+.std-wax-seal__flourish {
+    fill: none;
+    stroke: #92a4b3;
+    stroke-width: 4;
+    stroke-linecap: round;
+    filter: url('#std-wax-letter');
 }
 
 .std-cover-copy {
@@ -312,7 +409,6 @@ button { color: inherit; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     color: var(--dark-blue);
     text-align: center;
     text-shadow: 0 1px 12px rgba(255, 255, 255, .92);
@@ -321,48 +417,27 @@ button { color: inherit; }
 
 .std-cover-copy span,
 .std-cover-copy small {
+    position: absolute;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: .3em;
     text-transform: uppercase;
 }
 
+.std-cover-copy span { top: 8%; }
+
 .std-cover-copy strong {
-    margin: 2px 0 18px;
+    position: absolute;
+    top: 12%;
+    margin: 0;
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(48px, 6vw, 78px);
     font-weight: 500;
     line-height: .9;
 }
 
-.std-shell-seal {
-    width: clamp(84px, 9vw, 116px);
-    aspect-ratio: 1;
-    margin: 10px 0 4px;
-    filter: drop-shadow(0 8px 9px rgba(37, 49, 81, .22));
-    transform: rotate(-2deg);
-}
-
-.std-shell-seal svg {
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-}
-
-.std-shell-seal__wax {
-    fill: #eef8fb;
-    stroke: rgba(255, 255, 255, .96);
-    stroke-width: 4;
-    stroke-linejoin: round;
-}
-
-.std-shell-seal__line,
-.std-shell-seal__rim {
-    fill: none;
-    stroke: rgba(133, 155, 186, .72);
-    stroke-width: 2.2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.std-cover-copy small {
+    bottom: 5%;
 }
 
 .std-cover-copy small::after {
@@ -378,46 +453,6 @@ button { color: inherit; }
 @keyframes std-pulse {
     0%, 100% { transform: scaleY(.45); transform-origin: top; opacity: .5; }
     50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
-}
-
-.std-hydrangeas {
-    position: absolute;
-    inset: -2%;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    place-items: center;
-    filter: drop-shadow(0 7px 7px rgba(37, 49, 81, .12));
-}
-
-.std-flap--left .std-hydrangeas { transform: rotate(-1deg); }
-.std-flap--right .std-hydrangeas { transform: rotate(1deg); }
-
-.std-hydrangeas i {
-    width: clamp(66px, 7.2vw, 98px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at 50% 50%, var(--butter-yellow) 0 4%, transparent 5%),
-        radial-gradient(ellipse at 50% 18%, #fbfdfc 0 23%, transparent 24%),
-        radial-gradient(ellipse at 82% 50%, #eef7fa 0 23%, transparent 24%),
-        radial-gradient(ellipse at 50% 82%, var(--light-azure) 0 23%, transparent 24%),
-        radial-gradient(ellipse at 18% 50%, #f8fbfb 0 23%, transparent 24%);
-}
-
-.std-hydrangeas i:nth-child(5n + 1) { transform: rotate(-12deg) scale(1.12); }
-.std-hydrangeas i:nth-child(5n + 2) { transform: rotate(9deg) scale(.92); }
-.std-hydrangeas i:nth-child(5n + 3) { transform: rotate(22deg) scale(1.06); }
-.std-hydrangeas i:nth-child(5n + 4) { transform: rotate(-24deg) scale(.86); }
-.std-hydrangeas i:nth-child(5n + 5) { transform: rotate(5deg) scale(1.16); }
-
-.std-hydrangeas i:nth-child(4n) {
-    background:
-        radial-gradient(circle at 50% 50%, var(--butter-yellow) 0 4%, transparent 5%),
-        radial-gradient(ellipse at 50% 18%, #f7fbfc 0 23%, transparent 24%),
-        radial-gradient(ellipse at 82% 50%, var(--light-azure) 0 23%, transparent 24%),
-        radial-gradient(ellipse at 50% 82%, #edf5f8 0 23%, transparent 24%),
-        radial-gradient(ellipse at 18% 50%, var(--pastel-blue) 0 23%, transparent 24%);
 }
 
 .std-gallery {
@@ -572,10 +607,8 @@ button { color: inherit; }
     .std-details strong { font-size: 21px; }
     .std-details p { font-size: 10px; }
 
-    .std-flap { width: 62%; }
-    .std-hydrangeas {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(10, 1fr);
+    .std-floret__shape {
+        transform: scaleX(1.6);
     }
 
     .std-gallery { padding-top: 90px; }
@@ -593,7 +626,9 @@ button { color: inherit; }
     .std-gallery-link { margin-top: 20px; }
     .std-details p { max-width: 120px; margin: auto; }
     .std-cover-copy strong { font-size: 48px; }
-    .std-shell-seal { width: 82px; }
+    .std-floret__shape {
+        transform: scaleX(2.55);
+    }
     .std-gallery { padding-right: 12px; padding-left: 12px; }
     .std-footer { gap: 18px; letter-spacing: .12em; }
     .std-lightbox { grid-template-columns: 42px minmax(0, 1fr) 42px; padding-right: 0; padding-left: 0; }
