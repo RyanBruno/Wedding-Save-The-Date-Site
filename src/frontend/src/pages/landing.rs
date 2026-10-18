@@ -312,7 +312,11 @@ pub fn Landing() -> impl IntoView {
                             <CardMonogram/>
                             <p class="std-kicker">"Save the date"</p>
                             <p class="std-intro">"for the wedding of"</p>
-                            <h1>"Cameron" <em>"&"</em> "Ryan"</h1>
+                            <h1>
+                                <span>"Cameron Himes"</span>
+                                <em>"&"</em>
+                                <span>"Ryan Bruno"</span>
+                            </h1>
                             <p class="std-date">"Saturday · May 15 · 2027"</p>
                             <p class="std-place">"Bay Head, New Jersey"</p>
 
