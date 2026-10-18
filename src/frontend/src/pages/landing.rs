@@ -180,8 +180,9 @@ fn WaxSeal() -> impl IntoView {
                 <circle class="std-wax-seal__rim" cx="80" cy="78" r="57"/>
                 <circle class="std-wax-seal__stamp" cx="80" cy="78" r="42"/>
                 <path class="std-wax-seal__inner-shadow" d="M42 70A42 42 0 0 1 118 69"/>
-                <text class="std-wax-seal__letter" x="80" y="101" text-anchor="middle">"F"</text>
-                <path class="std-wax-seal__flourish" d="M54 106C64 113 84 111 99 101M91 53C104 57 107 65 102 71"/>
+                <text class="std-wax-seal__letter std-wax-seal__letter--c" x="65" y="93" text-anchor="middle">"C"</text>
+                <text class="std-wax-seal__letter std-wax-seal__letter--r" x="94" y="109" text-anchor="middle">"R"</text>
+                <path class="std-wax-seal__flourish" d="M51 112C65 118 88 116 104 105"/>
             </svg>
         </div>
     }
@@ -293,7 +294,6 @@ pub fn Landing() -> impl IntoView {
 
                         <div class="std-cover-copy" aria-hidden="true">
                             <span>"Save the date"</span>
-                            <strong>"C & R"</strong>
                             <small>"Scroll to open"</small>
                         </div>
                     </div>
