@@ -228,13 +228,13 @@ button { color: inherit; }
 }
 
 .std-card h1 {
-    margin: 2px 0 2px;
+    margin: .5em 0;
     display: grid;
     justify-items: center;
-    row-gap: clamp(34px, 4vw, 50px);
+    row-gap: .24em;
     color: var(--dark-blue);
     font-family: 'Great Vibes', cursive;
-    font-size: clamp(40px, 4.8vw, 60px);
+    font-size: 50px;
     font-weight: 400;
     line-height: .9;
     letter-spacing: 0;
@@ -689,7 +689,6 @@ button { color: inherit; }
 
     .std-card { padding: 34px 28px; }
     .std-card-monogram { width: 170px; height: 64px; }
-    .std-card h1 { font-size: clamp(40px, 10.5vw, 58px); }
     .std-date { font-size: 19px; }
     .std-details { margin-top: 24px; padding: 17px 0; }
     .std-details > div { padding: 0 12px; }
