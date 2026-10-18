@@ -314,7 +314,7 @@ pub fn Landing() -> impl IntoView {
                             <p class="std-intro">"for the wedding of"</p>
                             <h1>
                                 <span>"Cameron Himes"</span>
-                                <em>"&"</em>
+                                <em>"and"</em>
                                 <span>"Ryan Bruno"</span>
                             </h1>
                             <p class="std-date">"Saturday · May 15 · 2027"</p>
