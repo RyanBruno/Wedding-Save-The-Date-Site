@@ -383,11 +383,6 @@ pub fn Landing() -> impl IntoView {
                 </div>
             </section>
 
-            <footer class="std-footer">
-                <span>"Cameron & Ryan"</span>
-                <span>"05 · 15 · 27"</span>
-            </footer>
-
             <Show when=move || lightbox.get().is_some()>
                 <div
                     class="std-lightbox"
