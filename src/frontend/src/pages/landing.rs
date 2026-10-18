@@ -94,25 +94,31 @@ fn HydrangeaFlap(side: &'static str) -> impl IntoView {
                 </linearGradient>
                 <radialGradient id=petal_id cx="34%" cy="22%" r="84%">
                     <stop offset="0" stop-color="#ffffff"/>
-                    <stop offset=".62" stop-color="#f2f5fa"/>
-                    <stop offset="1" stop-color="#cbd5e7"/>
+                    <stop offset=".52" stop-color="#f5f7fa"/>
+                    <stop offset=".82" stop-color="#e9edf4"/>
+                    <stop offset="1" stop-color="#d2daea"/>
                 </radialGradient>
                 <linearGradient id=leaf_fill_id.clone() x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#bdcba2"/>
-                    <stop offset=".48" stop-color="#9caf7e"/>
-                    <stop offset="1" stop-color="#758b5e"/>
+                    <stop offset="0" stop-color="#c4cfaa"/>
+                    <stop offset=".46" stop-color="#98aa7c"/>
+                    <stop offset="1" stop-color="#73865e"/>
                 </linearGradient>
                 <clipPath id=clip_id>
                     <path d=silhouette/>
                 </clipPath>
                 <g id=floret_id>
                     <g class="std-floret__shape">
-                        <path class="std-floret__petal" fill=petal.clone() d="M0-2C-12-7-17-21-9-30C-4-36 4-36 9-30C17-21 12-7 0-2Z"/>
-                        <path class="std-floret__petal" fill=petal.clone() transform="rotate(90)" d="M0-2C-12-7-17-21-9-30C-4-36 4-36 9-30C17-21 12-7 0-2Z"/>
-                        <path class="std-floret__petal" fill=petal.clone() transform="rotate(180)" d="M0-2C-12-7-17-21-9-30C-4-36 4-36 9-30C17-21 12-7 0-2Z"/>
-                        <path class="std-floret__petal" fill=petal transform="rotate(270)" d="M0-2C-12-7-17-21-9-30C-4-36 4-36 9-30C17-21 12-7 0-2Z"/>
-                        <circle class="std-floret__center" r="3.5"/>
-                        <circle class="std-floret__center-dot" cx="-1.5" cy="-1.2" r=".8"/>
+                        <path class="std-floret__petal" fill=petal.clone() d="M0-1C-7-4-15-12-16-21C-17-29-12-35-5-35C-2-35 0-33 1-30C4-35 10-35 14-31C20-24 16-14 11-8C7-4 3-2 0-1Z"/>
+                        <path class="std-floret__petal" fill=petal.clone() transform="rotate(88) scale(.97 1.02)" d="M0-1C-7-4-15-12-16-21C-17-29-12-35-5-35C-2-35 0-33 1-30C4-35 10-35 14-31C20-24 16-14 11-8C7-4 3-2 0-1Z"/>
+                        <path class="std-floret__petal" fill=petal.clone() transform="rotate(181) scale(1.03 .96)" d="M0-1C-7-4-15-12-16-21C-17-29-12-35-5-35C-2-35 0-33 1-30C4-35 10-35 14-31C20-24 16-14 11-8C7-4 3-2 0-1Z"/>
+                        <path class="std-floret__petal" fill=petal transform="rotate(272) scale(.95 1.04)" d="M0-1C-7-4-15-12-16-21C-17-29-12-35-5-35C-2-35 0-33 1-30C4-35 10-35 14-31C20-24 16-14 11-8C7-4 3-2 0-1Z"/>
+                        <path class="std-floret__wash" d="M-10-3C-8-11-3-14 1-10C5-14 11-9 10-3C6 2-5 3-10-3Z"/>
+                        <g class="std-floret__center">
+                            <circle cx="-1.8" cy="-1.4" r="1.35"/>
+                            <circle cx="1.7" cy="-1" r="1.1"/>
+                            <circle cx=".4" cy="1.8" r="1.25"/>
+                            <circle class="std-floret__center-highlight" cx="-2.1" cy="-1.8" r=".45"/>
+                        </g>
                     </g>
                 </g>
                 <g id=head_id>
@@ -133,8 +139,9 @@ fn HydrangeaFlap(side: &'static str) -> impl IntoView {
                 </g>
                 <g id=leaf_id>
                     <g class="std-leaf__shape">
-                        <path class="std-leaf__body" fill=format!("url(#{leaf_fill_id})") d="M0 0C21-24 62-29 96-5C68 22 29 25 0 0Z"/>
-                        <path class="std-leaf__vein" d="M7 0C35-2 62-5 88-7M31-2L44-13M49-4L63 7M65-6L76-14"/>
+                        <path class="std-leaf__body" fill=format!("url(#{leaf_fill_id})") d="M0 0C12-14 28-24 43-27L49-31L55-28C70-27 84-19 97-6C85 5 70 15 54 19L48 22L42 19C25 18 11 10 0 0Z"/>
+                        <path class="std-leaf__wash" d="M8 1C30-7 53-13 88-7C65 4 40 12 8 1Z"/>
+                        <path class="std-leaf__vein" d="M6 1C32-2 60-5 90-7M24-1C30-7 36-13 43-19M38-3C44 3 50 8 57 13M51-5C58-11 63-16 69-19M65-6C71-1 75 3 80 6M76-7C80-11 83-14 86-15"/>
                     </g>
                 </g>
             </defs>
