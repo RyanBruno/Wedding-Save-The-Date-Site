@@ -12,12 +12,12 @@
 #
 #   makepkg -si
 
-pkgname=wedding-website
-pkgver=0.1.0.r60.gefa2b0b
-pkgrel=2
+pkgname=wedding-std
+pkgver=0.1.0.r1.c0c1a950
+pkgrel=1
 pkgdesc="Cameron & Ryan save-the-date site"
 arch=('any')
-url="https://github.com/RyanBruno/Wedding-Website"
+url="https://github.com/RyanBruno/Wedding-Save-The-Date-Site"
 license=('custom')
 makedepends=('git' 'git-lfs' 'rustup' 'binaryen' 'dart-sass')
 optdepends=('nginx: serves the static site and terminates TLS')
@@ -38,7 +38,7 @@ sha256sums=('SKIP')
 # so a build that already has the objects on disk cannot redirect it with a
 # config rule. WEDDING_LFS_REMOTE is that escape hatch: ../build.sh points it at
 # the repository copy inside the container, which needs no key and no network.
-_lfs_remote="${WEDDING_LFS_REMOTE:-git@github.com:RyanBruno/Wedding-Website.git}"
+_lfs_remote="${WEDDING_LFS_REMOTE:-git@github.com:RyanBruno/Wedding-Save-The-Date-Site.git}"
 
 pkgver() {
     cd "${srcdir}/${pkgname}"
