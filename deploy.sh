@@ -2,7 +2,7 @@
 #
 # Installs a package built by ./build.sh onto the machine that serves the site.
 #
-#     ./build.sh      # writes dist/wedding-website-*.pkg.tar.zst
+#     ./build.sh      # writes dist/wedding-std-*.pkg.tar.zst
 #     ./deploy.sh     # copies that over, installs it, reloads nginx
 #
 # This is the counterpart to build.sh and covers the whole deployment: the
@@ -25,7 +25,7 @@
 #     ./deploy.sh --build                # build it first, then deploy
 #     ./deploy.sh --host ryan@other.host
 #     ./deploy.sh --site https://example.com
-#     ./deploy.sh --package dist/wedding-website-0.1.0.r17.g1234567-1-any.pkg.tar.zst
+#     ./deploy.sh --package dist/wedding-std-0.1.0.r18.g1234567-1-any.pkg.tar.zst
 #
 set -euo pipefail
 
@@ -65,7 +65,7 @@ if [ -z "$package" ]; then
     # build.sh clears dist/ before every run, so there is only ever one build
     # in there — but it writes two files, and the -debug split package holds
     # the detached symbols rather than the site. Never install that one.
-    for candidate in "${repo_root}"/dist/wedding-website-[0-9]*.pkg.tar.zst; do
+    for candidate in "${repo_root}"/dist/wedding-std-[0-9]*.pkg.tar.zst; do
         [ -e "$candidate" ] || continue
         case $(basename "$candidate") in *-debug-*) continue ;; esac
         package=$candidate
@@ -123,9 +123,24 @@ fi
 # point. pacman reinstalls at the same version and downgrades to an older one
 # without further prompting under --noconfirm.
 #
-# The package's upgrade hook retires the old RSVP service and moves existing
-# certificate paths into the dedicated, package-preserved TLS configuration.
-echo "installed before: $(pacman -Q wedding-website 2>/dev/null || echo 'not installed')"
+# The RSVP package owns some of the same nginx paths. Its removal is deliberately
+# manual so this deploy can never discard that application or its configuration
+# as a side effect of --noconfirm.
+if pacman -Q wedding-website >/dev/null 2>&1; then
+    echo 'error: wedding-website is still installed.' >&2
+    echo '       stop its API, back up its data, then run:' >&2
+    echo '       sudo pacman -R wedding-website' >&2
+    exit 1
+fi
+
+if systemctl is-active --quiet wedding-website-api.service 2>/dev/null ||
+   systemctl is-enabled --quiet wedding-website-api.service 2>/dev/null; then
+    echo 'error: wedding-website-api.service is still active or enabled.' >&2
+    echo '       sudo systemctl disable --now wedding-website-api.service' >&2
+    exit 1
+fi
+
+echo "installed before: $(pacman -Q wedding-std 2>/dev/null || echo 'not installed')"
 sudo pacman -U --noconfirm "$remote_package"
 
 # nginx serves the static files straight out of the package, so it needs no
@@ -136,7 +151,7 @@ if sudo systemctl is-active --quiet nginx.service; then
 fi
 
 printf '\n==> Installed\n'
-pacman -Q wedding-website
+pacman -Q wedding-std
 REMOTE
 
 # ------------------------------------------------------------------ verify ---

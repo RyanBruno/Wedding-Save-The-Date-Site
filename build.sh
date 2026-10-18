@@ -9,8 +9,8 @@
 # scp'ing to the server:
 #
 #     ./build.sh
-#     scp dist/wedding-website-*.pkg.tar.zst <server>:
-#     ssh <server> 'sudo pacman -U wedding-website-*.pkg.tar.zst'
+#     scp dist/wedding-std-*.pkg.tar.zst <server>:
+#     ssh <server> 'sudo pacman -U wedding-std-*.pkg.tar.zst'
 #
 # The container matters for more than makepkg: binaries linked against this
 # host's libc would not run on Arch. Everything is compiled against the same
@@ -171,4 +171,4 @@ ls -lh "$out_dir"/*.pkg.tar.zst
 echo
 echo "Copy it to the server and install it there:"
 echo "    scp dist/*.pkg.tar.zst <server>:"
-echo "    ssh <server> 'sudo pacman -U wedding-website-*.pkg.tar.zst'"
+echo "    ssh <server> 'sudo pacman -U wedding-std-*.pkg.tar.zst'"

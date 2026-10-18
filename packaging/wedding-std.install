@@ -1,0 +1,46 @@
+migrate_legacy_tls() {
+    legacy=/etc/nginx/conf.d/wedding-website.conf.pacsave
+    migration=/run/wedding-std-tls.conf
+    target=/etc/nginx/wedding-website-tls.conf
+
+    [ -f "$legacy" ] || return 0
+
+    awk '
+        /^[[:space:]]*ssl_certificate[[:space:]]+/ ||
+        /^[[:space:]]*ssl_certificate_key[[:space:]]+/ { print }
+    ' "$legacy" > "$migration"
+
+    if [ "$(wc -l < "$migration")" -eq 2 ]; then
+        install -m644 "$migration" "$target"
+        echo '==> Preserved TLS certificate paths from wedding-website.'
+    else
+        echo 'warning: could not migrate TLS paths; using packaged defaults'
+    fi
+
+    rm -f "$migration"
+}
+
+post_install() {
+    migrate_legacy_tls
+
+    cat <<'MSG'
+==> wedding-std installed.
+
+    Three steps are still needed on a fresh machine:
+
+      1. Generate the TLS certificate (self-signed for now):
+           sudo /usr/share/doc/wedding-std/generate-self-signed-cert.sh
+
+      2. Let nginx read conf.d by adding this inside the http block of
+         /etc/nginx/nginx.conf, and comment out its default server block:
+           include conf.d/*.conf;
+
+      3. Start nginx:
+           sudo systemctl enable --now nginx.service
+MSG
+}
+
+post_upgrade() {
+    echo '==> Reload nginx to pick up the new build:'
+    echo '      sudo nginx -t && sudo systemctl reload nginx.service'
+}

@@ -12,8 +12,8 @@
 #
 #   makepkg -si
 
-pkgname=wedding-website
-pkgver=0.1.0.r16.gc5c9b8c
+pkgname=wedding-std
+pkgver=0.1.0.r17.g12fa89c
 pkgrel=1
 pkgdesc="Cameron & Ryan save-the-date site"
 arch=('any')
