@@ -233,7 +233,7 @@ button { color: inherit; }
     font-family: 'Great Vibes', cursive;
     font-size: clamp(48px, 5.8vw, 72px);
     font-weight: 400;
-    line-height: .82;
+    line-height: .9;
     letter-spacing: 0;
 }
 
@@ -243,7 +243,7 @@ button { color: inherit; }
 
 .std-card h1 em {
     display: block;
-    margin: .05em 0 -.02em;
+    margin: .18em 0 .12em;
     color: var(--sage-green);
     font-size: .58em;
     font-style: normal;
