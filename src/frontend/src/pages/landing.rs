@@ -78,9 +78,9 @@ fn HydrangeaFlap(side: &'static str) -> impl IntoView {
     let petal = format!("url(#{petal_id})");
     let paper = format!("url(#{paper_id})");
     let silhouette = if side == "left" {
-        "M0 0H307Q335 1 325 17Q355 12 344 33Q376 31 360 52Q394 54 374 72Q405 82 381 94Q405 111 378 119Q398 139 369 141Q387 164 357 160Q368 187 337 178Q347 207 318 192Q333 224 307 211Q322 238 342 235Q372 232 360 255Q397 249 382 276Q425 270 406 297Q455 294 433 320Q478 314 461 342Q507 338 484 362Q500 382 469 380Q487 405 455 397Q470 427 438 414Q448 444 416 430Q421 457 393 448Q409 477 380 464Q400 494 371 489Q400 519 379 533Q406 548 383 560Q404 579 378 586Q397 609 367 608Q380 632 348 627Q357 649 325 650H0Z"
+        "M24 0H307Q335 1 325 17Q355 12 344 33Q376 31 360 52Q394 54 374 72Q405 82 381 94Q405 111 378 119Q398 139 369 141Q387 164 357 160Q368 187 337 178Q347 207 318 192Q333 224 307 211Q322 238 342 235Q372 232 360 255Q397 249 382 276Q425 270 406 297Q455 294 433 320Q478 314 461 342Q507 338 484 362Q500 382 469 380Q487 405 455 397Q470 427 438 414Q448 444 416 430Q421 457 393 448Q409 477 380 464Q400 494 371 489Q400 519 379 533Q406 548 383 560Q404 579 378 586Q397 609 367 608Q380 632 348 627Q357 649 325 650H30Q10 644 22 625Q-3 611 16 590Q-4 570 18 553Q-2 531 20 514Q2 492 23 476Q0 455 20 436Q-2 415 22 398Q2 377 24 359Q4 338 25 321Q3 301 22 282Q0 263 20 242Q-2 220 20 202Q0 181 22 164Q2 143 24 126Q4 105 25 88Q6 68 27 50Q8 31 29 17Q14 6 24 0Z"
     } else {
-        "M0 0H318Q347 2 336 19Q365 15 354 37Q387 35 370 56Q402 59 381 78Q412 88 388 101Q410 119 382 126Q403 146 374 148Q390 172 360 167Q374 194 342 184Q351 211 323 199Q337 228 312 216Q328 242 347 241Q378 237 366 261Q401 256 387 282Q431 277 412 304Q461 301 439 327Q485 321 467 350Q507 346 485 368Q500 389 470 387Q487 413 455 404Q468 434 437 421Q447 451 414 437Q420 465 392 455Q407 483 379 472Q398 502 369 496Q397 526 376 540Q402 554 379 567Q399 586 373 592Q391 615 361 614Q374 637 342 633Q351 649 319 650H0Z"
+        "M18 0H318Q347 2 336 19Q365 15 354 37Q387 35 370 56Q402 59 381 78Q412 88 388 101Q410 119 382 126Q403 146 374 148Q390 172 360 167Q374 194 342 184Q351 211 323 199Q337 228 312 216Q328 242 347 241Q378 237 366 261Q401 256 387 282Q431 277 412 304Q461 301 439 327Q485 321 467 350Q507 346 485 368Q500 389 470 387Q487 413 455 404Q468 434 437 421Q447 451 414 437Q420 465 392 455Q407 483 379 472Q398 502 369 496Q397 526 376 540Q402 554 379 567Q399 586 373 592Q391 615 361 614Q374 637 342 633Q351 649 319 650H24Q6 642 19 622Q-4 605 17 586Q-1 565 20 547Q0 525 23 509Q3 487 25 469Q2 447 22 429Q0 409 20 389Q-2 369 22 350Q1 329 24 311Q2 290 21 272Q-1 251 20 232Q-3 211 19 193Q0 172 22 154Q2 132 25 115Q5 93 24 77Q3 56 26 39Q7 21 27 10Q10 3 18 0Z"
     };
     let art_class = format!("std-flap-art std-flap-art--{side}");
 
@@ -150,15 +150,56 @@ fn HydrangeaFlap(side: &'static str) -> impl IntoView {
                 <path class="std-flap-art__paper" fill=paper d=silhouette/>
                 <use href=head.clone() class="std-flower-head std-flower-head--top" transform="translate(183 104) scale(1.77)"/>
                 <use href=head.clone() class="std-flower-head std-flower-head--middle" transform="translate(284 328) rotate(7) scale(1.84)"/>
-                <use href=head class="std-flower-head std-flower-head--bottom" transform="translate(184 555) rotate(-5) scale(1.8)"/>
+                <use href=head.clone() class="std-flower-head std-flower-head--bottom" transform="translate(184 555) rotate(-5) scale(1.8)"/>
+                <use href=head class="std-flower-head std-flower-head--outer" transform="translate(60 334) rotate(-9) scale(1.48)"/>
             </g>
 
             <g class="std-flap-leaves">
                 <use href=leaf.clone() transform="translate(397 275) rotate(-48) scale(.76)"/>
                 <use href=leaf.clone() transform="translate(378 393) rotate(35) scale(.72)"/>
-                <use href=leaf transform="translate(61 586) rotate(154) scale(.78)"/>
+                <use href=leaf.clone() transform="translate(61 586) rotate(154) scale(.78)"/>
+                <use href=leaf.clone() transform="translate(42 220) rotate(151) scale(.68)"/>
+                <use href=leaf transform="translate(58 461) rotate(166) scale(.7)"/>
             </g>
         </svg>
+    }
+}
+
+#[component]
+fn CardMonogram() -> impl IntoView {
+    view! {
+        <div class="std-card-monogram" aria-label="C and R">
+            <svg viewBox="0 0 220 86" aria-hidden="true">
+                <defs>
+                    <radialGradient id="std-monogram-petal" cx="34%" cy="24%" r="82%">
+                        <stop offset="0" stop-color="#ffffff"/>
+                        <stop offset=".72" stop-color="#f0f3f8"/>
+                        <stop offset="1" stop-color="#cfd8e7"/>
+                    </radialGradient>
+                    <g id="std-monogram-floret">
+                        <path d="M0-1C-5-3-9-8-9-13C-9-18-6-21-2-20C0-22 4-22 7-19C11-14 8-7 0-1Z"/>
+                        <path transform="rotate(91)" d="M0-1C-5-3-9-8-9-13C-9-18-6-21-2-20C0-22 4-22 7-19C11-14 8-7 0-1Z"/>
+                        <path transform="rotate(181)" d="M0-1C-5-3-9-8-9-13C-9-18-6-21-2-20C0-22 4-22 7-19C11-14 8-7 0-1Z"/>
+                        <path transform="rotate(271)" d="M0-1C-5-3-9-8-9-13C-9-18-6-21-2-20C0-22 4-22 7-19C11-14 8-7 0-1Z"/>
+                        <circle r="1.4"/>
+                    </g>
+                </defs>
+                <g class="std-card-monogram__leaves">
+                    <path d="M22 55C31 35 48 21 72 15C61 36 45 49 22 55ZM198 55C189 35 172 21 148 15C159 36 175 49 198 55Z"/>
+                </g>
+                <g class="std-card-monogram__flowers">
+                    <use href="#std-monogram-floret" transform="translate(55 19) rotate(-18) scale(.9)"/>
+                    <use href="#std-monogram-floret" transform="translate(34 35) rotate(12) scale(.82)"/>
+                    <use href="#std-monogram-floret" transform="translate(30 59) rotate(-8) scale(.76)"/>
+                    <use href="#std-monogram-floret" transform="translate(51 69) rotate(17) scale(.84)"/>
+                    <use href="#std-monogram-floret" transform="translate(165 19) rotate(18) scale(.9)"/>
+                    <use href="#std-monogram-floret" transform="translate(186 35) rotate(-12) scale(.82)"/>
+                    <use href="#std-monogram-floret" transform="translate(190 59) rotate(8) scale(.76)"/>
+                    <use href="#std-monogram-floret" transform="translate(169 69) rotate(-17) scale(.84)"/>
+                </g>
+            </svg>
+            <strong><span>"C"</span><i>"&"</i><span>"R"</span></strong>
+        </div>
     }
 }
 
@@ -268,8 +309,9 @@ pub fn Landing() -> impl IntoView {
 
                     <div class="std-invite">
                         <article class="std-card">
-                            <div class="std-card__rule"><span></span></div>
+                            <CardMonogram/>
                             <p class="std-kicker">"Save the date"</p>
+                            <p class="std-intro">"for the wedding of"</p>
                             <h1>"Cameron" <em>"&"</em> "Ryan"</h1>
                             <p class="std-date">"Saturday · May 15 · 2027"</p>
                             <p class="std-place">"Bay Head, New Jersey"</p>
