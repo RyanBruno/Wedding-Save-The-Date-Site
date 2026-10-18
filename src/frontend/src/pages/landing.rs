@@ -330,7 +330,6 @@ pub fn Landing() -> impl IntoView {
                             </div>
 
                             <a class="std-gallery-link" href="#gallery">"Gallary"</a>
-                            <div class="std-card__rule std-card__rule--bottom"><span></span></div>
                         </article>
 
                         <div class="std-flap std-flap--left" aria-hidden="true">
